@@ -205,7 +205,32 @@ print(ast)
 
 # OK, you've got the parse tree, now evaluate it!
 def evaluateExpression(expr, symboltable):
-    return 0
+    if type(expr) == tuple:
+        if expr[0] == 'binop':
+            if expr[1] == '+':
+                return evaluateExpression(expr[2], symboltable) + evaluateExpression(expr[3], symboltable)
+            elif expr[1] == '-':
+                return evaluateExpression(expr[2], symboltable) - evaluateExpression(expr[3], symboltable)
+            elif expr[1] == '*':
+                return evaluateExpression(expr[2], symboltable) * evaluateExpression(expr[3], symboltable)
+            elif expr[1] == '/':
+                return evaluateExpression(expr[2], symboltable) / evaluateExpression(expr[3], symboltable)
+        elif expr[0] == 'unary':
+            if expr[1] == '+':
+                return evaluateExpression(expr[2], symboltable)
+            elif expr[1] == '-':
+                return -evaluateExpression(expr[2], symboltable)
+        elif expr[0] == 'grouped':
+            return evaluateExpression(expr[1], symboltable)
+        elif expr[0] == 'name':
+            if expr[1] in symboltable:
+                return symboltable[expr[1]]
+            else:
+                raise Exception(f"Variable {expr[1]} not defined")
+        elif expr[0] == 'number':
+            return expr[1]
+    else:
+        return expr
 
 
 def populateSymbols(symbollist):
