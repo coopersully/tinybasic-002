@@ -132,11 +132,6 @@ def p_expression(p):
     expression : term PLUS term
                | term MINUS term
     '''
-    # p is a sequence that represents rule contents.
-    #
-    # expression : term PLUS term
-    #   p[0]     : p[1] p[2] p[3]
-    # 
     p[0] = ('binop', p[2], p[1], p[3])
 
 
@@ -204,41 +199,29 @@ print(ast)
 
 
 # OK, you've got the parse tree, now evaluate it!
-def evaluateExpression(expr, symboltable):
+def evaluateExpression(expr, symbol_table):
     if type(expr) == tuple:
         if expr[0] == 'binop':
             if expr[1] == '+':
-                return evaluateExpression(expr[2], symboltable) + evaluateExpression(expr[3], symboltable)
+                return evaluateExpression(expr[2], symbol_table) + evaluateExpression(expr[3], symbol_table)
             elif expr[1] == '-':
-                return evaluateExpression(expr[2], symboltable) - evaluateExpression(expr[3], symboltable)
-            elif expr[1] == '*':
-                return evaluateExpression(expr[2], symboltable) * evaluateExpression(expr[3], symboltable)
-            elif expr[1] == '/':
-                return evaluateExpression(expr[2], symboltable) / evaluateExpression(expr[3], symboltable)
-        elif expr[0] == 'unary':
-            if expr[1] == '+':
-                return evaluateExpression(expr[2], symboltable)
-            elif expr[1] == '-':
-                return -evaluateExpression(expr[2], symboltable)
-        elif expr[0] == 'grouped':
-            return evaluateExpression(expr[1], symboltable)
+                return evaluateExpression(expr[2], symbol_table) - evaluateExpression(expr[3], symbol_table)
         elif expr[0] == 'name':
-            if expr[1] in symboltable:
-                return symboltable[expr[1]]
+            if expr[1] in symbol_table:
+                return symbol_table[expr[1]]
             else:
-                raise Exception(f"Variable {expr[1]} not defined")
+                raise NameError(f"Error: Symbol '{expr[1]}' has not been assigned a value")
         elif expr[0] == 'number':
             return expr[1]
-    else:
-        return expr
+    return expr
 
 
-def populateSymbols(symbollist):
-    symboltable = {}
-    for i in range(len(symbollist)):
+def populateSymbols(symbol_list):
+    symbol_table = {}
+    for i in range(len(symbol_list)):
         if i % 2 == 0:
-            symboltable[symbollist[i]] = evaluateExpression(symbollist[i + 1], symboltable)
-    return symboltable
+            symbol_table[symbol_list[i]] = evaluateExpression(symbol_list[i + 1], symbol_table)
+    return symbol_table
 
 
 def evaluate(ast):
