@@ -206,6 +206,10 @@ def evaluateExpression(expr, symbol_table):
                 return evaluateExpression(expr[2], symbol_table) + evaluateExpression(expr[3], symbol_table)
             elif expr[1] == '-':
                 return evaluateExpression(expr[2], symbol_table) - evaluateExpression(expr[3], symbol_table)
+            elif expr[1] == '*':
+                return evaluateExpression(expr[2], symbol_table) * evaluateExpression(expr[3], symbol_table)
+            elif expr[1] == '/':
+                return evaluateExpression(expr[2], symbol_table) / evaluateExpression(expr[3], symbol_table)
         elif expr[0] == 'name':
             if expr[1] in symbol_table:
                 return symbol_table[expr[1]]
@@ -213,6 +217,13 @@ def evaluateExpression(expr, symbol_table):
                 raise NameError(f"Error: Symbol '{expr[1]}' has not been assigned a value")
         elif expr[0] == 'number':
             return expr[1]
+        elif expr[0] == 'unary':
+            if expr[1] == '+':
+                return evaluateExpression(expr[2], symbol_table)
+            elif expr[1] == '-':
+                return -evaluateExpression(expr[2], symbol_table)
+        elif expr[0] == 'grouped':
+            return evaluateExpression(expr[1], symbol_table)
     return expr
 
 
